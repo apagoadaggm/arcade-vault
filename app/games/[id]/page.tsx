@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { useMemo } from 'react';
+import { use, useMemo } from 'react';
 import { GAMES, seededScores } from '@/app/data';
 
-export default function GameDetail({ params }: { params: { id: string } }) {
-  const game = useMemo(() => GAMES.find(g => g.id === params.id), [params.id]);
-  const scores = useMemo(() => seededScores(params.id.length * 17 + 3, 10), [params.id]);
+export default function GameDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const game = useMemo(() => GAMES.find(g => g.id === id), [id]);
+  const scores = useMemo(() => seededScores(id.length * 17 + 3, 10), [id]);
 
   if (!game) notFound();
 
@@ -48,7 +49,7 @@ export default function GameDetail({ params }: { params: { id: string } }) {
             </div>
           </div>
           <div className="detail-actions">
-            <Link href={`/games/${game.id}/play`} className="btn xl pulse">▶ JUGAR AHORA</Link>
+            <Link href={`/games/${id}/play`} className="btn xl pulse">▶ JUGAR AHORA</Link>
             <Link href="/" className="btn ghost lg">VOLVER AL VAULT</Link>
           </div>
         </div>
