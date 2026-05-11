@@ -15,16 +15,11 @@ Arcade Vault — an online gaming platform where users play and compete for poin
 - **Tailwind CSS v4** (PostCSS plugin via `@tailwindcss/postcss`)
 - **TypeScript**
 
-## Commands
-
-```bash
-npm run dev      # start dev server (port 3000)
-npm run build    # production build
-npm run start    # serve production build
-npm run lint     # ESLint (Next.js config)
-```
-
 No test runner is configured yet.
+
+## Skills
+
+Usa siempre /frontend-design para diseñar la interfaz de usuario.
 
 ## Architecture
 
