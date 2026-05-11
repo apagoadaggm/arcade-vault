@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { UserProvider } from "./context/UserContext";
+import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
   title: "Arcade Vault",
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col">
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <Nav />
+          {children}
+        </UserProvider>
       </body>
     </html>
   );
