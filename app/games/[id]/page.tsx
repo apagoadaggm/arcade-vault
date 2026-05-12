@@ -47,7 +47,7 @@ export default function GameDetail({ params }: { params: Promise<{ id: string }>
           </div>
           <div className="detail-actions">
             <Link href={`/games/${id}/play`} className="btn xl pulse">▶ JUGAR AHORA</Link>
-            <Link href="/" className="btn ghost lg">VOLVER AL VAULT</Link>
+            <Link href="/games" className="btn ghost lg">VOLVER AL VAULT</Link>
           </div>
         </div>
       </div>

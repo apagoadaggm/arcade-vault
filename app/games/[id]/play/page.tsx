@@ -119,7 +119,7 @@ export default function GamePlayer({ params }: { params: Promise<{ id: string }>
             )}
             <div className="actions">
               <button className="btn" onClick={restart}>JUGAR DE NUEVO</button>
-              <Link href="/" className="btn magenta">VOLVER AL VAULT</Link>
+              <Link href="/games" className="btn magenta">VOLVER AL VAULT</Link>
             </div>
           </div>
         </div>
