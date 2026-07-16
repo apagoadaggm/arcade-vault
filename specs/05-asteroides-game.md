@@ -1,6 +1,6 @@
 # SPEC 05 — Juego Asteroides (motor real)
 
-> **Estado:** Aprobado · **Depende de:** 01-mvp-visual-screens · **Fecha:** 2026-07-16
+> **Estado:** Implementado · **Depende de:** 01-mvp-visual-screens · **Fecha:** 2026-07-16
 > **Objetivo:** Adaptar el juego Asteroids de `references/started-games/02-asteroids/game.js`
 > a un motor TypeScript + componente canvas que reemplaza el mock del Reproductor para el
 > nuevo juego `asteroides`, integrándose con el HUD y el modal de fin de partida existentes.
@@ -197,56 +197,56 @@ en memoria mientras el componente está montado, igual que el resto del catálog
 
 **Motor y componente**
 
-- [ ] `lib/games/asteroids/engine.ts` exporta `AsteroidsEngine` con `reset()`,
+- [x] `lib/games/asteroids/engine.ts` exporta `AsteroidsEngine` con `reset()`,
       `forceGameOver()`, `destroy()` y los callbacks `onScoreChange`, `onLivesChange`,
       `onLevelChange`, `onGameOver`, `onRestart`.
-- [ ] `npm run build` no reporta errores de tipos en `engine.ts` ni en
+- [x] `npm run build` no reporta errores de tipos en `engine.ts` ni en
       `AsteroidsCanvas.tsx`.
-- [ ] `components/games/AsteroidsCanvas.tsx` expone `{ reset, forceGameOver }` vía ref
+- [x] `components/games/AsteroidsCanvas.tsx` expone `{ reset, forceGameOver }` vía ref
       y limpia el loop de `requestAnimationFrame` y los listeners de teclado al
       desmontarse.
 
 **Reproductor (`/games/asteroides/play`)**
 
-- [ ] Al navegar a `/games/asteroides/play` se renderiza el canvas del juego real (no
+- [x] Al navegar a `/games/asteroides/play` se renderiza el canvas del juego real (no
       el mock decorativo con enemigos CSS).
-- [ ] Las flechas rotan/propulsan la nave y Espacio dispara, igual que el juego
+- [x] Las flechas rotan/propulsan la nave y Espacio dispara, igual que el juego
       original.
-- [ ] El HUD dibujado en el canvas (SCORE, NIVEL, vidas, temporizador 3x) sigue
+- [x] El HUD dibujado en el canvas (SCORE, NIVEL, vidas, temporizador 3x) sigue
       visible y funcional.
-- [ ] El HUD de React (panel superior) refleja los mismos valores de puntuación,
+- [x] El HUD de React (panel superior) refleja los mismos valores de puntuación,
       vidas y nivel que el canvas, en tiempo real.
-- [ ] El botón "PAUSA" detiene el loop del juego (todo se congela) y "REANUDAR" lo
+- [x] El botón "PAUSA" detiene el loop del juego (todo se congela) y "REANUDAR" lo
       retoma.
-- [ ] El botón "FIN" fuerza el fin de partida del motor real (no solo abre el modal
+- [x] El botón "FIN" fuerza el fin de partida del motor real (no solo abre el modal
       por fuera) — dispara el overlay "GAME OVER" en canvas y el modal de React a la
       vez.
-- [ ] Perder las 3 vidas dispara automáticamente el overlay "GAME OVER" en canvas y
+- [x] Perder las 3 vidas dispara automáticamente el overlay "GAME OVER" en canvas y
       el modal de React con la puntuación final.
-- [ ] El power-up de disparo triple ("3x") aparece, se puede recoger y activa el
+- [x] El power-up de disparo triple ("3x") aparece, se puede recoger y activa el
       disparo triple temporalmente.
-- [ ] Los asteroides grandes se dividen en medianos y estos en pequeños al ser
+- [x] Los asteroides grandes se dividen en medianos y estos en pequeños al ser
       destruidos, sumando los puntos correspondientes (100/50/20).
-- [ ] Presionar Espacio dentro del canvas en estado "GAME OVER" reinicia el motor y
+- [x] Presionar Espacio dentro del canvas en estado "GAME OVER" reinicia el motor y
       sincroniza el HUD de React, incluyendo el cierre del modal si estaba abierto.
-- [ ] El botón "JUGAR DE NUEVO" del modal reinicia el motor mediante `ref.reset()` y
+- [x] El botón "JUGAR DE NUEVO" del modal reinicia el motor mediante `ref.reset()` y
       el juego queda jugable desde cero.
-- [ ] El botón "SALIR" navega de vuelta a `/games/asteroides` sin errores.
+- [x] El botón "SALIR" navega de vuelta a `/games/asteroides` sin errores.
 
 **Catálogo y navegación**
 
-- [ ] `/games` muestra la card "ASTEROIDES" con la portada `.cover-asteroides`.
-- [ ] La card "ASTEROIDES" enlaza a `/games/asteroides` (Detalle) y desde ahí "JUGAR
+- [x] `/games` muestra la card "ASTEROIDES" con la portada `.cover-asteroides`.
+- [x] La card "ASTEROIDES" enlaza a `/games/asteroides` (Detalle) y desde ahí "JUGAR
       AHORA" enlaza a `/games/asteroides/play`.
-- [ ] El juego `rocas` (card, detalle, reproductor mock) no sufrió ningún cambio de
+- [x] El juego `rocas` (card, detalle, reproductor mock) no sufrió ningún cambio de
       comportamiento.
 
 **Alcance respetado**
 
-- [ ] No se agregaron controles táctiles ni botones en pantalla.
-- [ ] No se creó ninguna tabla ni llamada a Supabase para guardar puntuaciones.
-- [ ] No se removió el HUD ni el overlay "GAME OVER" dibujados en el canvas.
-- [ ] `npm run build` completa sin errores de TypeScript ni de build.
+- [x] No se agregaron controles táctiles ni botones en pantalla.
+- [x] No se creó ninguna tabla ni llamada a Supabase para guardar puntuaciones.
+- [x] No se removió el HUD ni el overlay "GAME OVER" dibujados en el canvas.
+- [x] `npm run build` completa sin errores de TypeScript ni de build.
 
 ---
 
