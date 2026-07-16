@@ -407,7 +407,7 @@ export default function HomePage() {
               {TOP.map((r, i) => (
                 <div
                   key={i}
-                  className={`top-row${i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : ""}`}
+                  className={`top-row ${i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : ""}`.trim()}
                 >
                   <span className="tp-rk">#{String(r.r).padStart(2, "0")}</span>
                   <span className="tp-bar">

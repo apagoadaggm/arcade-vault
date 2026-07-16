@@ -103,7 +103,7 @@ export default function Biblioteca() {
           {CATS.map((c) => (
             <button
               key={c}
-              className={`chip${cat === c ? "active" : ""}`}
+              className={`chip ${cat === c ? "active" : ""}`.trim()}
               onClick={() => setCat(c)}
             >
               {c}

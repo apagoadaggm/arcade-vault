@@ -55,7 +55,7 @@ export default function HallOfFame() {
         {games.map((g) => (
           <button
             key={g.id}
-            className={`chip${tab === g.id ? "active" : ""}`}
+            className={`chip ${tab === g.id ? "active" : ""}`.trim()}
             onClick={() => setTab(g.id)}
           >
             {g.title}
@@ -150,7 +150,7 @@ export default function HallOfFame() {
             {rows.map((r, i) => (
               <div
                 key={r.id}
-                className={`tr${i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : ""}`}
+                className={`tr ${i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : ""}`.trim()}
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div className="rk">#{String(i + 1).padStart(2, "0")}</div>

@@ -99,7 +99,7 @@ export default function GameDetail({
           {scores.map((r, i) => (
             <div
               key={r.id}
-              className={`lb-row${i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : ""}`}
+              className={`lb-row ${i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : ""}`.trim()}
             >
               <div className="rk">#{String(i + 1).padStart(2, "0")}</div>
               <div className="pl">
