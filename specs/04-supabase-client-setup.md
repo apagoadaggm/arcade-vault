@@ -1,6 +1,6 @@
 # SPEC 04 — Setup del cliente de Supabase
 
-> **Estado:** Aprobado · **Depende de:** Ninguno · **Fecha:** 2026-07-16
+> **Estado:** Implementado · **Depende de:** Ninguno · **Fecha:** 2026-07-16
 > **Objetivo:** Configurar el cliente de Supabase (@supabase/ssr + @supabase/supabase-js)
 > en la app Next.js, con instancias separadas para navegador y servidor, dejando la
 > base lista para que specs futuros implementen autenticación real y persistencia de datos.
@@ -16,9 +16,16 @@
   (`createBrowserClient`).
 - Crear `lib/supabase/server.ts` — cliente de Supabase para uso en Server Components /
   Route Handlers (`createServerClient`), leyendo y escribiendo cookies vía `next/headers`.
-- Añadir `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` a `.env.local` como
+- Añadir `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` a `.env.local` como
   placeholders vacíos, con comentario en `.env.template` indicando de dónde obtenerlos
   (Supabase Dashboard → Project Settings → API).
+
+  > **Nota de implementación:** el nombre original de la variable era
+  > `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Al implementar, `.env.local` ya existía con la clave
+  > bajo el nombre `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (formato nuevo de claves de
+  > Supabase, `sb_publishable_...`) y con valores reales cargados. Se decidió respetar esa
+  > convención ya presente en el repo en lugar de introducir `ANON_KEY` en paralelo.
+
 - Verificar la conexión con una llamada simple (`supabase.auth.getSession()`) una vez
   que el usuario complete las variables de entorno.
 
@@ -48,7 +55,7 @@ persistentes, solo configura los clientes de conexión.
    Verificación: ambos paquetes aparecen en `package.json` dependencies.
 
 2. **Añadir variables de entorno** — agregar a `.env.local`:
-   `NEXT_PUBLIC_SUPABASE_URL=` y `NEXT_PUBLIC_SUPABASE_ANON_KEY=` (vacías). Agregar a
+   `NEXT_PUBLIC_SUPABASE_URL=` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=` (vacías). Agregar a
    `.env.template` las mismas claves con un comentario indicando que se obtienen en
    Supabase Dashboard → Project Settings → API del proyecto `ugkzgpixmjiymranyklc`.
    Verificación: ambos archivos contienen las claves.
@@ -63,7 +70,7 @@ persistentes, solo configura los clientes de conexión.
    Verificación: el archivo compila sin errores de TypeScript.
 
 5. **Verificación end-to-end** — el usuario completa `NEXT_PUBLIC_SUPABASE_URL` y
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY` en `.env.local` con los valores reales del proyecto.
+   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` en `.env.local` con los valores reales del proyecto.
    Se confirma que `npm run build` pasa sin errores y que una llamada de prueba a
    `supabase.auth.getSession()` desde el cliente de navegador no lanza error de red
    (devuelve `{ data: { session: null }, error: null }`, ya que no hay auth implementado).
@@ -74,28 +81,29 @@ persistentes, solo configura los clientes de conexión.
 
 **Dependencias y configuración**
 
-- [ ] `@supabase/ssr` y `@supabase/supabase-js` aparecen en `package.json` dependencies.
-- [ ] `.env.local` contiene `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-- [ ] `.env.template` documenta ambas variables con un comentario sobre dónde obtenerlas.
+- [x] `@supabase/ssr` y `@supabase/supabase-js` aparecen en `package.json` dependencies.
+- [x] `.env.local` contiene `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+      (nombre final; ver nota de implementación en Scope).
+- [x] `.env.template` documenta ambas variables con un comentario sobre dónde obtenerlas.
 
 **Clientes de Supabase**
 
-- [ ] `lib/supabase/client.ts` exporta un `createClient()` funcional para Client Components.
-- [ ] `lib/supabase/server.ts` exporta un `createClient()` funcional para Server Components
+- [x] `lib/supabase/client.ts` exporta un `createClient()` funcional para Client Components.
+- [x] `lib/supabase/server.ts` exporta un `createClient()` funcional para Server Components
       / Route Handlers, integrado con `next/headers`.
-- [ ] `npm run build` completa sin errores de TypeScript ni de build.
+- [x] `npm run build` completa sin errores de TypeScript ni de build.
 
 **Conexión real**
 
-- [ ] Con las variables de entorno reales completadas por el usuario, una llamada a
+- [x] Con las variables de entorno reales completadas por el usuario, una llamada a
       `supabase.auth.getSession()` desde el cliente de navegador devuelve
       `{ data: { session: null }, error: null }` sin error de red ni de configuración.
 
 **Alcance respetado**
 
-- [ ] No existe ningún `middleware.ts` de Supabase en la raíz del proyecto.
-- [ ] No se creó ninguna tabla, migración ni política RLS en el proyecto Supabase remoto.
-- [ ] `app/auth/page.tsx` y `UserContext.tsx` no fueron modificados.
+- [x] No existe ningún `middleware.ts` de Supabase en la raíz del proyecto.
+- [x] No se creó ninguna tabla, migración ni política RLS en el proyecto Supabase remoto.
+- [x] `app/auth/page.tsx` y `UserContext.tsx` no fueron modificados.
 
 ---
 
@@ -112,7 +120,7 @@ persistentes, solo configura los clientes de conexión.
   cookies.
 
 - **Sí:** Variables de entorno como placeholder vacío (`NEXT_PUBLIC_SUPABASE_URL=`,
-  `NEXT_PUBLIC_SUPABASE_ANON_KEY=`) en lugar de completarlas automáticamente vía MCP.
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=`) en lugar de completarlas automáticamente vía MCP.
   Mismo patrón que `RESEND_API_KEY` en el spec 03: el repo no incluye secrets, el usuario
   las completa manualmente.
 
