@@ -84,9 +84,14 @@ export default function GamePlayer({
           </button>
           <button
             className="btn magenta"
-            onClick={() =>
-              isAsteroides ? canvasRef.current?.forceGameOver() : setOver(true)
-            }
+            onClick={() => {
+              if (isAsteroides) {
+                setPaused(false);
+                canvasRef.current?.forceGameOver();
+              } else {
+                setOver(true);
+              }
+            }}
           >
             FIN
           </button>
