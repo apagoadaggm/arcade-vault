@@ -1,6 +1,6 @@
 # SPEC 06 — Persistencia de catálogo y leaderboard en Supabase
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** 04-supabase-client-setup, 05-asteroides-game
 > **Fecha:** 2026-07-16
 > **Objetivo:** Reemplazar el catálogo estático y el leaderboard falso por datos reales de Supabase (tablas `games` y `scores`), guardando la puntuación al terminar una partida de Asteroides.
