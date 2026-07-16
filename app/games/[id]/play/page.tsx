@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
 import { GAMES } from "@/app/data";
+import { insertScore } from "@/lib/data/scores";
 import { useUser } from "@/app/context/UserContext";
 import {
   AsteroidsCanvas,
@@ -27,7 +28,9 @@ export default function GamePlayer({
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user ?? "INVITADO");
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const canvasRef = useRef<AsteroidsCanvasHandle>(null);
+  const savedOnceRef = useRef(false);
 
   if (!game) notFound();
 
@@ -110,14 +113,25 @@ export default function GamePlayer({
               onScoreChange={setScore}
               onLivesChange={setLives}
               onLevelChange={setLevel}
-              onGameOver={() => {
+              onGameOver={(finalScore) => {
                 setOver(true);
                 setSaved(false);
+                setSaveError(false);
+                if (savedOnceRef.current) return;
+                savedOnceRef.current = true;
+                insertScore("asteroides", user ?? "ANÓNIMO", finalScore)
+                  .then(() => setSaved(true))
+                  .catch(() => {
+                    savedOnceRef.current = false;
+                    setSaveError(true);
+                  });
               }}
               onRestart={() => {
                 setOver(false);
                 setSaved(false);
+                setSaveError(false);
                 setName(user ?? "INVITADO");
+                savedOnceRef.current = false;
               }}
             />
           ) : (
@@ -166,7 +180,17 @@ export default function GamePlayer({
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{score.toLocaleString("es-ES")}</div>
-            {!saved ? (
+            {isAsteroides ? (
+              saveError ? (
+                <div className="toast-saved">
+                  ▸ ERROR AL GUARDAR LA PUNTUACIÓN_
+                </div>
+              ) : saved ? (
+                <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+              ) : (
+                <div className="toast-saved">▸ GUARDANDO PUNTUACIÓN…</div>
+              )
+            ) : !saved ? (
               <div className="input-row">
                 <input
                   value={name}
