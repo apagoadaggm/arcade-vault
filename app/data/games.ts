@@ -81,6 +81,15 @@ export const GAMES: Game[] = [
     cover: "cover-tetris",
     color: "yellow",
   },
+  {
+    id: "arkanoid",
+    title: "ARKANOID",
+    short: "Rebota la pelota y no dejes que ningún bloque sobreviva.",
+    long: "Controla una paleta de neón y desvía una pelota implacable contra murallas de bloques cromáticos. Cada impacto suma puntos; cada nivel superado acelera la pelota y reordena el patrón. Los cinco patrones se repiten en un ciclo infinito cada vez más veloz — resiste todo lo que puedas antes de perder tus tres vidas.",
+    cat: "ARCADE",
+    cover: "cover-arkanoid",
+    color: "magenta",
+  },
 ];
 
 export const CATS: ("TODOS" | Game["cat"])[] = [

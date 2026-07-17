@@ -14,6 +14,10 @@ import {
   TetrisCanvas,
   type TetrisCanvasHandle,
 } from "@/components/games/TetrisCanvas";
+import {
+  ArkanoidCanvas,
+  type ArkanoidCanvasHandle,
+} from "@/components/games/ArkanoidCanvas";
 
 export default function GamePlayer({
   params,
@@ -24,6 +28,7 @@ export default function GamePlayer({
   const game = GAMES.find((g) => g.id === id);
   const isAsteroides = id === "asteroides";
   const isTetris = id === "tetris";
+  const isArkanoid = id === "arkanoid";
   const { user } = useUser();
 
   const [score, setScore] = useState(0);
@@ -38,23 +43,25 @@ export default function GamePlayer({
   const savedOnceRef = useRef(false);
   const tetrisCanvasRef = useRef<TetrisCanvasHandle>(null);
   const tetrisSavedOnceRef = useRef(false);
+  const arkanoidCanvasRef = useRef<ArkanoidCanvasHandle>(null);
+  const arkanoidSavedOnceRef = useRef(false);
 
   if (!game) notFound();
 
   useEffect(() => {
-    if (isAsteroides || isTetris) return;
+    if (isAsteroides || isTetris || isArkanoid) return;
     if (over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isAsteroides, isTetris, over, paused]);
+  }, [isAsteroides, isTetris, isArkanoid, over, paused]);
 
   useEffect(() => {
-    if (isAsteroides || isTetris) return;
+    if (isAsteroides || isTetris || isArkanoid) return;
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [isAsteroides, isTetris, score]);
+  }, [isAsteroides, isTetris, isArkanoid, score]);
 
   function restart() {
     setScore(0);
@@ -101,6 +108,9 @@ export default function GamePlayer({
               } else if (isTetris) {
                 setPaused(false);
                 tetrisCanvasRef.current?.forceGameOver();
+              } else if (isArkanoid) {
+                setPaused(false);
+                arkanoidCanvasRef.current?.forceGameOver();
               } else {
                 setOver(true);
               }
@@ -172,6 +182,34 @@ export default function GamePlayer({
                 tetrisSavedOnceRef.current = false;
               }}
             />
+          ) : isArkanoid ? (
+            <ArkanoidCanvas
+              ref={arkanoidCanvasRef}
+              paused={paused}
+              onScoreChange={setScore}
+              onLevelChange={setLevel}
+              onLivesChange={setLives}
+              onGameOver={(finalScore) => {
+                setOver(true);
+                setSaved(false);
+                setSaveError(false);
+                if (arkanoidSavedOnceRef.current) return;
+                arkanoidSavedOnceRef.current = true;
+                insertScore("arkanoid", user ?? "ANÓNIMO", finalScore)
+                  .then(() => setSaved(true))
+                  .catch(() => {
+                    arkanoidSavedOnceRef.current = false;
+                    setSaveError(true);
+                  });
+              }}
+              onRestart={() => {
+                setOver(false);
+                setSaved(false);
+                setSaveError(false);
+                setName(user ?? "INVITADO");
+                arkanoidSavedOnceRef.current = false;
+              }}
+            />
           ) : (
             <div className="game-arena">
               <div className="grid-floor" />
@@ -218,7 +256,7 @@ export default function GamePlayer({
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{score.toLocaleString("es-ES")}</div>
-            {isAsteroides || isTetris ? (
+            {isAsteroides || isTetris || isArkanoid ? (
               saveError ? (
                 <div className="toast-saved">
                   ▸ ERROR AL GUARDAR LA PUNTUACIÓN_
@@ -252,7 +290,9 @@ export default function GamePlayer({
                     ? canvasRef.current?.reset()
                     : isTetris
                       ? tetrisCanvasRef.current?.reset()
-                      : restart()
+                      : isArkanoid
+                        ? arkanoidCanvasRef.current?.reset()
+                        : restart()
                 }
               >
                 JUGAR DE NUEVO
