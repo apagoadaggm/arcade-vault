@@ -90,6 +90,15 @@ export const GAMES: Game[] = [
     cover: "cover-arkanoid",
     color: "magenta",
   },
+  {
+    id: "snake",
+    title: "SNAKE",
+    short: "Come frutas, crece y no choques contigo mismo.",
+    long: "Guía a la serpiente por una cuadrícula de 20×20 recogiendo las frutas más variadas del arcade. Cada fruta suma puntos según lo rara que sea, y cada 5 frutas la velocidad aumenta un poco más. Un solo error contra el borde o tu propia cola termina la partida.",
+    cat: "ARCADE",
+    cover: "cover-snake-real",
+    color: "green",
+  },
 ];
 
 export const CATS: ("TODOS" | Game["cat"])[] = [

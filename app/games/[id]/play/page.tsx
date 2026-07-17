@@ -18,6 +18,10 @@ import {
   ArkanoidCanvas,
   type ArkanoidCanvasHandle,
 } from "@/components/games/ArkanoidCanvas";
+import {
+  SnakeCanvas,
+  type SnakeCanvasHandle,
+} from "@/components/games/SnakeCanvas";
 
 export default function GamePlayer({
   params,
@@ -29,6 +33,7 @@ export default function GamePlayer({
   const isAsteroides = id === "asteroides";
   const isTetris = id === "tetris";
   const isArkanoid = id === "arkanoid";
+  const isSnake = id === "snake";
   const { user } = useUser();
 
   const [score, setScore] = useState(0);
@@ -45,23 +50,25 @@ export default function GamePlayer({
   const tetrisSavedOnceRef = useRef(false);
   const arkanoidCanvasRef = useRef<ArkanoidCanvasHandle>(null);
   const arkanoidSavedOnceRef = useRef(false);
+  const snakeCanvasRef = useRef<SnakeCanvasHandle>(null);
+  const snakeSavedOnceRef = useRef(false);
 
   if (!game) notFound();
 
   useEffect(() => {
-    if (isAsteroides || isTetris || isArkanoid) return;
+    if (isAsteroides || isTetris || isArkanoid || isSnake) return;
     if (over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isAsteroides, isTetris, isArkanoid, over, paused]);
+  }, [isAsteroides, isTetris, isArkanoid, isSnake, over, paused]);
 
   useEffect(() => {
-    if (isAsteroides || isTetris || isArkanoid) return;
+    if (isAsteroides || isTetris || isArkanoid || isSnake) return;
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [isAsteroides, isTetris, isArkanoid, score]);
+  }, [isAsteroides, isTetris, isArkanoid, isSnake, score]);
 
   function restart() {
     setScore(0);
@@ -86,10 +93,12 @@ export default function GamePlayer({
             <div className="l">Puntuación</div>
             <div className="v">{score.toLocaleString("es-ES")}</div>
           </div>
-          <div className="hud-stat lives">
-            <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
-          </div>
+          {!isSnake && (
+            <div className="hud-stat lives">
+              <div className="l">Vidas</div>
+              <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
+            </div>
+          )}
           <div className="hud-stat level">
             <div className="l">Nivel</div>
             <div className="v">{String(level).padStart(2, "0")}</div>
@@ -111,6 +120,9 @@ export default function GamePlayer({
               } else if (isArkanoid) {
                 setPaused(false);
                 arkanoidCanvasRef.current?.forceGameOver();
+              } else if (isSnake) {
+                setPaused(false);
+                snakeCanvasRef.current?.forceGameOver();
               } else {
                 setOver(true);
               }
@@ -210,6 +222,33 @@ export default function GamePlayer({
                 arkanoidSavedOnceRef.current = false;
               }}
             />
+          ) : isSnake ? (
+            <SnakeCanvas
+              ref={snakeCanvasRef}
+              paused={paused}
+              onScoreChange={setScore}
+              onLevelChange={setLevel}
+              onGameOver={(finalScore) => {
+                setOver(true);
+                setSaved(false);
+                setSaveError(false);
+                if (snakeSavedOnceRef.current) return;
+                snakeSavedOnceRef.current = true;
+                insertScore("snake", user ?? "ANÓNIMO", finalScore)
+                  .then(() => setSaved(true))
+                  .catch(() => {
+                    snakeSavedOnceRef.current = false;
+                    setSaveError(true);
+                  });
+              }}
+              onRestart={() => {
+                setOver(false);
+                setSaved(false);
+                setSaveError(false);
+                setName(user ?? "INVITADO");
+                snakeSavedOnceRef.current = false;
+              }}
+            />
           ) : (
             <div className="game-arena">
               <div className="grid-floor" />
@@ -256,7 +295,7 @@ export default function GamePlayer({
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{score.toLocaleString("es-ES")}</div>
-            {isAsteroides || isTetris || isArkanoid ? (
+            {isAsteroides || isTetris || isArkanoid || isSnake ? (
               saveError ? (
                 <div className="toast-saved">
                   ▸ ERROR AL GUARDAR LA PUNTUACIÓN_
@@ -292,7 +331,9 @@ export default function GamePlayer({
                       ? tetrisCanvasRef.current?.reset()
                       : isArkanoid
                         ? arkanoidCanvasRef.current?.reset()
-                        : restart()
+                        : isSnake
+                          ? snakeCanvasRef.current?.reset()
+                          : restart()
                 }
               >
                 JUGAR DE NUEVO
