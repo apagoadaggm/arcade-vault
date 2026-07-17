@@ -35,9 +35,9 @@ export default function GameDetail({
   return (
     <div className="av-detail fade-in">
       <div>
-        <div className="detail-cover">
+        <Link href={`/games/${id}/play`} className="detail-cover">
           <div className={`cover-bg ${game.cover}`} />
-        </div>
+        </Link>
         <div style={{ marginTop: 20 }} className="detail-info">
           <div className="detail-tags">
             <span>{game.cat}</span>

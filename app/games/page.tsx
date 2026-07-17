@@ -34,10 +34,10 @@ function GameCard({ game }: { game: GameWithStats }) {
 
   return (
     <div ref={ref} className="card" onMouseMove={onMove} onMouseLeave={onLeave}>
-      <div className="cover">
+      <Link href={`/games/${game.id}`} className="cover">
         <div className={`cover-bg ${game.cover}`} />
         <div className="label">{game.cat}</div>
-      </div>
+      </Link>
       <div className="meta">
         <div className="title">{game.title}</div>
         <div className="desc">{game.short}</div>

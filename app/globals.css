@@ -604,6 +604,7 @@ a {
 }
 
 .card .cover {
+  display: block;
   aspect-ratio: 4 / 3;
   position: relative;
   overflow: hidden;
@@ -881,6 +882,7 @@ a {
   }
 }
 .detail-cover {
+  display: block;
   aspect-ratio: 16 / 10;
   position: relative;
   border: 1px solid var(--line);
