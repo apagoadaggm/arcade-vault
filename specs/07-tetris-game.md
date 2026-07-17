@@ -1,6 +1,6 @@
 # SPEC 07 — Juego Tetris (motor real)
 
-> **Estado:** Aprobado · **Depende de:** 05-asteroides-game, 06-supabase-games-scores · **Fecha:** 2026-07-17
+> **Estado:** Implementado · **Depende de:** 05-asteroides-game, 06-supabase-games-scores · **Fecha:** 2026-07-17
 > **Objetivo:** Portar el Tetris de `references/started-games/03-tetris/game.js` a un motor TypeScript + componente canvas que se integra como juego nuevo `tetris` en el Reproductor, el catálogo y el leaderboard real de Supabase.
 
 ---
@@ -243,67 +243,67 @@ tal cual vía `lib/data/scores.ts` (`getScores`, `getPlayerBest`, `insertScore`)
 
 **Motor y componente**
 
-- [ ] `lib/games/tetris/engine.ts` exporta `TetrisEngine` con `reset()`,
+- [x] `lib/games/tetris/engine.ts` exporta `TetrisEngine` con `reset()`,
       `forceGameOver()`, `destroy()` y los callbacks `onScoreChange`, `onLevelChange`,
       `onLivesChange`, `onGameOver`, `onRestart`.
-- [ ] `npm run build` no reporta errores de tipos en `engine.ts` ni en
+- [x] `npm run build` no reporta errores de tipos en `engine.ts` ni en
       `TetrisCanvas.tsx`.
-- [ ] `components/games/TetrisCanvas.tsx` expone `{ reset, forceGameOver }` vía ref y
+- [x] `components/games/TetrisCanvas.tsx` expone `{ reset, forceGameOver }` vía ref y
       limpia el loop de `requestAnimationFrame` y el listener de teclado al
       desmontarse.
 
 **Reproductor (`/games/tetris/play`)**
 
-- [ ] Al navegar a `/games/tetris/play` se renderiza el canvas del juego real (no el
+- [x] Al navegar a `/games/tetris/play` se renderiza el canvas del juego real (no el
       mock decorativo).
-- [ ] ←/→ mueven la pieza, ↑ o X la rotan (con wall kicks), ↓ hace soft drop y Espacio
+- [x] ←/→ mueven la pieza, ↑ o X la rotan (con wall kicks), ↓ hace soft drop y Espacio
       hace hard drop, igual que el original.
-- [ ] El panel dibujado en canvas muestra SCORE/LINES/LEVEL y la vista previa de la
+- [x] El panel dibujado en canvas muestra SCORE/LINES/LEVEL y la vista previa de la
       siguiente pieza; la pieza fantasma (ghost) se ve semitransparente en su posición
       de aterrizaje.
-- [ ] El HUD de React (panel superior) refleja la misma puntuación y nivel que el
+- [x] El HUD de React (panel superior) refleja la misma puntuación y nivel que el
       canvas en tiempo real, y muestra "Vidas" fijo en 1 corazón durante toda la
       partida.
-- [ ] El botón "PAUSA" detiene el loop del juego (todo se congela) y "REANUDAR" lo
+- [x] El botón "PAUSA" detiene el loop del juego (todo se congela) y "REANUDAR" lo
       retoma; no existe ninguna tecla de pausa propia del motor.
-- [ ] El botón "FIN" fuerza el fin de partida real (`forceGameOver`), abriendo el modal
+- [x] El botón "FIN" fuerza el fin de partida real (`forceGameOver`), abriendo el modal
       de React con la puntuación final.
-- [ ] Que una pieza nueva no quepa al aparecer dispara automáticamente el modal de
+- [x] Que una pieza nueva no quepa al aparecer dispara automáticamente el modal de
       React con la puntuación final (game over).
-- [ ] Completar una línea la elimina del tablero, suma los puntos de `LINE_SCORES`
+- [x] Completar una línea la elimina del tablero, suma los puntos de `LINE_SCORES`
       multiplicados por el nivel, y las líneas de arriba caen una posición.
-- [ ] El nivel sube cada 10 líneas acumuladas y la velocidad de caída aumenta en
+- [x] El nivel sube cada 10 líneas acumuladas y la velocidad de caída aumenta en
       consecuencia.
-- [ ] Las 8 piezas (7 tetrominós + "tuerca") aparecen aleatoriamente durante el juego.
-- [ ] El botón "JUGAR DE NUEVO" del modal reinicia el motor mediante `ref.reset()` y el
+- [x] Las 8 piezas (7 tetrominós + "tuerca") aparecen aleatoriamente durante el juego.
+- [x] El botón "JUGAR DE NUEVO" del modal reinicia el motor mediante `ref.reset()` y el
       juego queda jugable desde cero.
-- [ ] El botón "SALIR" navega de vuelta a `/games/tetris` sin errores.
+- [x] El botón "SALIR" navega de vuelta a `/games/tetris` sin errores.
 
 **Persistencia**
 
-- [ ] Al terminar una partida (game over), se inserta una fila en `scores` con
+- [x] Al terminar una partida (game over), se inserta una fila en `scores` con
       `game_id='tetris'`, `score` = puntuación final y `player_name` = nombre de
       `UserContext` o `'ANÓNIMO'` si no hay nombre.
-- [ ] La marca guardada aparece en el Salón de la Fama de `tetris` tras recargar, y
+- [x] La marca guardada aparece en el Salón de la Fama de `tetris` tras recargar, y
       actualiza `best`/`plays` en biblioteca y detalle.
-- [ ] No se inserta más de una fila por partida (React Strict Mode / doble disparo de
+- [x] No se inserta más de una fila por partida (React Strict Mode / doble disparo de
       `onGameOver`).
 
 **Catálogo y navegación**
 
-- [ ] `/games` muestra la card "TETRIS" con la portada `.cover-tetris`.
-- [ ] La card "TETRIS" enlaza a `/games/tetris` (Detalle) y desde ahí "JUGAR AHORA"
+- [x] `/games` muestra la card "TETRIS" con la portada `.cover-tetris`.
+- [x] La card "TETRIS" enlaza a `/games/tetris` (Detalle) y desde ahí "JUGAR AHORA"
       enlaza a `/games/tetris/play`.
-- [ ] La entrada `caida` (card, detalle, reproductor mock) no sufrió ningún cambio de
+- [x] La entrada `caida` (card, detalle, reproductor mock) no sufrió ningún cambio de
       comportamiento.
 
 **Alcance respetado**
 
-- [ ] No se agregaron controles táctiles ni botones en pantalla.
-- [ ] No se agregó ningún toggle de tema claro/oscuro propio del juego.
-- [ ] No se removió ni se modificó ningún otro juego existente (`asteroides`, `rocas`,
+- [x] No se agregaron controles táctiles ni botones en pantalla.
+- [x] No se agregó ningún toggle de tema claro/oscuro propio del juego.
+- [x] No se removió ni se modificó ningún otro juego existente (`asteroides`, `rocas`,
       `caida`, etc.).
-- [ ] `npm run build` completa sin errores de TypeScript ni de build.
+- [x] `npm run build` completa sin errores de TypeScript ni de build.
 
 ---
 
