@@ -72,6 +72,15 @@ export const GAMES: Game[] = [
     cover: "cover-asteroides",
     color: "cyan",
   },
+  {
+    id: "tetris",
+    title: "TETRIS",
+    short: "Encaja las piezas antes de que la torre te sepulte.",
+    long: "Piezas geométricas caen sin descanso desde la oscuridad. Rota, desliza y encaja cada tetrominó para completar líneas antes de que el tablero se desborde. Cada 10 líneas el ritmo se acelera sin piedad.",
+    cat: "PUZZLE",
+    cover: "cover-tetris",
+    color: "yellow",
+  },
 ];
 
 export const CATS: ("TODOS" | Game["cat"])[] = [

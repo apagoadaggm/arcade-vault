@@ -834,6 +834,32 @@ a {
   text-shadow: 0 0 8px var(--cyan);
 }
 
+.cover-tetris {
+  background: radial-gradient(circle at 50% 100%, #2a2400, #0a0a18);
+}
+.cover-tetris::after {
+  content: "";
+  position: absolute;
+  inset: 18% 34% 10% 34%;
+  background:
+    linear-gradient(#fff9c4, #fff9c4) 0 0/33.33% 33.33%,
+    linear-gradient(#f5ff00, #f5ff00) 0 33.33%/33.33% 33.33%,
+    linear-gradient(#ffd54f, #ffd54f) 0 66.66%/33.33% 33.33%,
+    linear-gradient(#ffb300, #ffb300) 33.33% 66.66%/33.33% 33.33%;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 8px rgba(245, 255, 0, 0.45));
+  image-rendering: pixelated;
+}
+.cover-tetris::before {
+  content: "▣";
+  position: absolute;
+  left: 46%;
+  top: 40%;
+  color: var(--yellow);
+  font-size: 24px;
+  text-shadow: 0 0 8px var(--yellow);
+}
+
 .cover-rana {
   background: linear-gradient(180deg, #001f2a, #0a0a18);
 }
