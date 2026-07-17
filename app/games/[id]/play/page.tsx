@@ -10,6 +10,10 @@ import {
   AsteroidsCanvas,
   type AsteroidsCanvasHandle,
 } from "@/components/games/AsteroidsCanvas";
+import {
+  TetrisCanvas,
+  type TetrisCanvasHandle,
+} from "@/components/games/TetrisCanvas";
 
 export default function GamePlayer({
   params,
@@ -19,6 +23,7 @@ export default function GamePlayer({
   const { id } = use(params);
   const game = GAMES.find((g) => g.id === id);
   const isAsteroides = id === "asteroides";
+  const isTetris = id === "tetris";
   const { user } = useUser();
 
   const [score, setScore] = useState(0);
@@ -31,23 +36,25 @@ export default function GamePlayer({
   const [saveError, setSaveError] = useState(false);
   const canvasRef = useRef<AsteroidsCanvasHandle>(null);
   const savedOnceRef = useRef(false);
+  const tetrisCanvasRef = useRef<TetrisCanvasHandle>(null);
+  const tetrisSavedOnceRef = useRef(false);
 
   if (!game) notFound();
 
   useEffect(() => {
-    if (isAsteroides) return;
+    if (isAsteroides || isTetris) return;
     if (over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220,
     );
     return () => clearInterval(t);
-  }, [isAsteroides, over, paused]);
+  }, [isAsteroides, isTetris, over, paused]);
 
   useEffect(() => {
-    if (isAsteroides) return;
+    if (isAsteroides || isTetris) return;
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [isAsteroides, score]);
+  }, [isAsteroides, isTetris, score]);
 
   function restart() {
     setScore(0);
@@ -91,6 +98,9 @@ export default function GamePlayer({
               if (isAsteroides) {
                 setPaused(false);
                 canvasRef.current?.forceGameOver();
+              } else if (isTetris) {
+                setPaused(false);
+                tetrisCanvasRef.current?.forceGameOver();
               } else {
                 setOver(true);
               }
@@ -132,6 +142,34 @@ export default function GamePlayer({
                 setSaveError(false);
                 setName(user ?? "INVITADO");
                 savedOnceRef.current = false;
+              }}
+            />
+          ) : isTetris ? (
+            <TetrisCanvas
+              ref={tetrisCanvasRef}
+              paused={paused}
+              onScoreChange={setScore}
+              onLevelChange={setLevel}
+              onLivesChange={setLives}
+              onGameOver={(finalScore) => {
+                setOver(true);
+                setSaved(false);
+                setSaveError(false);
+                if (tetrisSavedOnceRef.current) return;
+                tetrisSavedOnceRef.current = true;
+                insertScore("tetris", user ?? "ANÓNIMO", finalScore)
+                  .then(() => setSaved(true))
+                  .catch(() => {
+                    tetrisSavedOnceRef.current = false;
+                    setSaveError(true);
+                  });
+              }}
+              onRestart={() => {
+                setOver(false);
+                setSaved(false);
+                setSaveError(false);
+                setName(user ?? "INVITADO");
+                tetrisSavedOnceRef.current = false;
               }}
             />
           ) : (
@@ -180,7 +218,7 @@ export default function GamePlayer({
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{score.toLocaleString("es-ES")}</div>
-            {isAsteroides ? (
+            {isAsteroides || isTetris ? (
               saveError ? (
                 <div className="toast-saved">
                   ▸ ERROR AL GUARDAR LA PUNTUACIÓN_
@@ -210,7 +248,11 @@ export default function GamePlayer({
               <button
                 className="btn"
                 onClick={() =>
-                  isAsteroides ? canvasRef.current?.reset() : restart()
+                  isAsteroides
+                    ? canvasRef.current?.reset()
+                    : isTetris
+                      ? tetrisCanvasRef.current?.reset()
+                      : restart()
                 }
               >
                 JUGAR DE NUEVO
