@@ -1,6 +1,6 @@
 # SPEC 09 — Juego Snake
 
-> **Estado:** Aprobado · **Depende de:** 05-asteroides-game, 06-supabase-games-scores · **Fecha:** 2026-07-17
+> **Estado:** Implementado · **Depende de:** 05-asteroides-game, 06-supabase-games-scores · **Fecha:** 2026-07-17
 > **Objetivo:** Diseñar desde cero (sin código de referencia) un motor de Snake sobre grid 20×20 con frutas dibujadas desde el sprite atlas de `references/source-assets/snake-assets/`, e integrarlo al reproductor, catálogo y persistencia de Supabase siguiendo la receta de spec 05/06.
 
 ---
