@@ -111,7 +111,16 @@ export class TetrisEngine {
   private dropAccum = 0;
   private gameOver = false;
 
+  private static readonly GAME_KEYS = new Set([
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "Space",
+  ]);
+
   private handleKeyDown = (e: KeyboardEvent) => {
+    if (TetrisEngine.GAME_KEYS.has(e.code)) e.preventDefault();
     if (this.gameOver) return;
     switch (e.code) {
       case "ArrowLeft":
@@ -134,7 +143,6 @@ export class TetrisEngine {
         this.tryRotate();
         break;
       case "Space":
-        e.preventDefault();
         this.hardDrop();
         break;
     }

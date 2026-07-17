@@ -331,9 +331,17 @@ export class AsteroidsEngine {
   private height: number;
   private callbacks: AsteroidsEngineCallbacks;
 
+  private static readonly GAME_KEYS = new Set([
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "Space",
+  ]);
+
   private keys: Record<string, boolean> = {};
   private justPressed: Record<string, boolean> = {};
   private handleKeyDown = (e: KeyboardEvent) => {
+    if (AsteroidsEngine.GAME_KEYS.has(e.code)) e.preventDefault();
     if (!this.keys[e.code]) this.justPressed[e.code] = true;
     this.keys[e.code] = true;
   };
