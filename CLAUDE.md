@@ -1,100 +1,104 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Este archivo da contexto a Claude Code (claude.ai/code) para trabajar en este repositorio.
 
 @AGENTS.md
 
-## Project
+## Proyecto
 
-Arcade Vault — an online gaming platform where users play games and compete for points. Uses **Spec Driven Design** via the `/spec` and `/spec-impl` skills from `npx skills@latest add Klerith/fernando-skills`, plus a repo-local `/add-game` skill.
+Arcade Vault — una plataforma de juegos online donde los usuarios juegan y compiten por puntos. Usa **Spec Driven Design** vía los skills `/spec` y `/spec-impl` de `npx skills@latest add Klerith/fernando-skills`, más el skill local `/add-game`.
 
-There are **4 playable games** (Asteroids, Tetris, Arkanoid, Snake) with real engines and Supabase leaderboards, alongside placeholder catalog entries.
+Hay **4 juegos jugables** (Asteroids, Tetris, Arkanoid, Snake) con motores reales y leaderboards en Supabase, junto a entradas de catálogo tipo placeholder.
 
 ## Stack
 
-- **Next.js 16.2.6** with App Router (`app/` directory) — read `node_modules/next/dist/docs/` before writing Next.js code; APIs differ from training data
+- **Next.js 16.2.6** con App Router (directorio `app/`) — lee `node_modules/next/dist/docs/` antes de escribir código Next.js; las APIs difieren de lo que conoces por entrenamiento
 - **React 19.2.4**
-- **Tailwind CSS v4** (PostCSS plugin via `@tailwindcss/postcss`; no `tailwind.config.*` — configured via CSS in `app/globals.css`)
-- **TypeScript ^5** (`strict`, path alias `@/*` → `./*`)
-- **Supabase** — `@supabase/ssr ^0.12.3` + `@supabase/supabase-js ^2.110.7` (leaderboards + score persistence)
-- **Resend** `^6.12.3` — contact form emails
-- **ESLint 9** (flat config: `eslint-config-next` + `eslint-config-prettier`) and **Prettier** (`prettier-plugin-tailwindcss`)
+- **Tailwind CSS v4** (plugin PostCSS vía `@tailwindcss/postcss`; sin `tailwind.config.*` — se configura vía CSS en `app/globals.css`)
+- **TypeScript ^5** (`strict`, alias de path `@/*` → `./*`)
+- **Supabase** — `@supabase/ssr ^0.12.3` + `@supabase/supabase-js ^2.110.7` (leaderboards + persistencia de puntuaciones)
+- **Resend** `^6.12.3` — emails del formulario de contacto
+- **ESLint 9** (config plana: `eslint-config-next` + `eslint-config-prettier`) y **Prettier** (`prettier-plugin-tailwindcss`)
 
-No test runner is configured yet.
+Aún no hay test runner configurado.
 
 ## Scripts
 
-- `npm run dev` — dev server (port 3000)
-- `npm run build` — production build
-- `npm run start` — serve the build
+- `npm run dev` — servidor de desarrollo (puerto 3000)
+- `npm run build` — build de producción
+- `npm run start` — sirve el build
 - `npm run lint` — ESLint
 
 ## Skills & Spec Driven Design
 
 Usa siempre /frontend-design para diseñar la interfaz de usuario.
 
-Skill sources live in `.agents/skills/`; `.claude/skills/` are **symlinks** to them.
+Las fuentes de los skills viven en `.agents/skills/`; `.claude/skills/` son **symlinks** a ellas.
 
-- **`/spec`** and **`/spec-impl`** — from `Klerith/fernando-skills` (pinned in `skills-lock.json`). `/spec` designs a spec; `/spec-impl` implements an approved one.
-- **`/add-game`** — repo-local skill (`.agents/skills/add-game/`). Designs a new game's `specs/NN-slug.md` following the proven recipe of spec 05 (engine + canvas + player integration) and spec 06 (Supabase persistence). Writes no code; implement afterward with `/spec-impl`.
+- **`/spec`** y **`/spec-impl`** — de `Klerith/fernando-skills` (fijados en `skills-lock.json`). `/spec` diseña un spec; `/spec-impl` implementa uno ya aprobado.
+- **`/add-game`** — skill local del repo (`.agents/skills/add-game/`). Diseña el `specs/NN-slug.md` de un juego nuevo siguiendo la receta probada del spec 05 (motor + canvas + integración en el jugador) y el spec 06 (persistencia en Supabase). No escribe código; se implementa después con `/spec-impl`.
 
-**Feature/game workflow:** `/spec` or `/add-game` → `specs/NN-slug.md` (`Borrador`) → human sets it to `Aprobado` → `/spec-impl NN-slug` creates branch `spec-NN-slug` and implements step-by-step → verify + `npm run build` → final commit marks the spec `Implementado` → PR to `main`.
+**Flujo de feature/juego:** `/spec` o `/add-game` → `specs/NN-slug.md` (`Borrador`) → una persona lo pasa a `Aprobado` → `/spec-impl NN-slug` crea la rama `spec-NN-slug` e implementa paso a paso → verificar + `npm run build` → el commit final marca el spec como `Implementado` → PR a `main`.
 
-Specs live in `specs/` as `NN-slug.md` (specs 01–09), authored in Spanish, opening with a blockquote header: `Estado:` (`Borrador`/`En revisión`/`Aprobado`/`Implementado`/`Obsoleto`), `Depende de:`, `Objetivo:`. The 7-section template is in `.agents/skills/spec/template.md`.
+Los specs viven en `specs/` como `NN-slug.md` (specs 01–09), redactados en español, con un encabezado en blockquote al inicio: `Estado:` (`Borrador`/`En revisión`/`Aprobado`/`Implementado`/`Obsoleto`), `Depende de:`, `Objetivo:`. La plantilla de 7 secciones está en `.agents/skills/spec/template.md`.
 
-## Automation
+## Agentes
 
-- `.claude/settings.json` registers a `PostToolUse` hook (`Write|Edit|MultiEdit`) that runs `.claude/hooks/format-and-lint.sh` — Prettier + ESLint `--fix`. You do not need to format edited files by hand.
-- `.mcp.json` defines the `supabase` MCP server (`project_ref=ugkzgpixmjiymranyklc`). Supabase schema changes (e.g. seeding a row in `games`) are applied via the MCP `apply_migration` tool — there are no `.sql` migration files in the repo.
+- **`game-planner`** (`.claude/agents/game-planner.md`, modelo `opus`) — subagente que piensa y decide qué juego nuevo encaja con Arcade Vault. Solo planifica: no escribe specs ni código. Mantiene su memoria en `references/game-suggestions-todo.md` (lee las sugerencias previas antes de proponer nuevas, para no repetir ideas, y añade cada sugerencia aceptada o descartada sin borrar el historial). Cuando una idea se acepta, el siguiente paso sigue siendo ejecutar `/add-game` manualmente.
 
-## Environment
+## Automatización
 
-Copy `.env.template` (committed) to `.env.local` and fill in:
+- `.claude/settings.json` registra un hook `PostToolUse` (`Write|Edit|MultiEdit`) que ejecuta `.claude/hooks/format-and-lint.sh` — Prettier + ESLint `--fix`. No hace falta formatear a mano los archivos editados.
+- `.mcp.json` define el servidor MCP `supabase` (`project_ref=ugkzgpixmjiymranyklc`). Los cambios de esquema en Supabase (p. ej. sembrar una fila en `games`) se aplican vía la tool MCP `apply_migration` — no hay archivos `.sql` de migración en el repo.
 
-- `RESEND_API_KEY` — consumed by `app/api/contact/route.ts`
+## Entorno
+
+Copia `.env.template` (versionado) a `.env.local` y completa:
+
+- `RESEND_API_KEY` — usado por `app/api/contact/route.ts`
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
-The Supabase schema lives only on the remote project (`ugkzgpixmjiymranyklc`), not in the repo.
+El esquema de Supabase vive solo en el proyecto remoto (`ugkzgpixmjiymranyklc`), no en el repo.
 
-## Architecture
+## Arquitectura
 
-Uses Next.js **App Router** exclusively — no `pages/` directory. Server Components are the default; mark client components with `"use client"` only when needed.
+Usa exclusivamente el **App Router** de Next.js — sin directorio `pages/`. Los Server Components son el default; marca los client components con `"use client"` solo cuando haga falta.
 
 ```
 app/
   layout.tsx, page.tsx (home "/"), globals.css
-  about/  auth/  hall-of-fame/         # routes
+  about/  auth/  hall-of-fame/         # rutas
   games/  games/[id]/  games/[id]/play/
-  context/UserContext.tsx              # useUser() — client auth context
-  data/                                # STATIC catalog: Game, GAMES[], CATS + seed scores
+  context/UserContext.tsx              # useUser() — contexto de auth del cliente
+  data/                                # catálogo ESTÁTICO: Game, GAMES[], CATS + scores semilla
   api/contact/route.ts                 # POST → Resend
 components/
   Nav.tsx
-  games/{Asteroids,Tetris,Arkanoid,Snake}Canvas.tsx   # renderers, expose *CanvasHandle
+  games/{Asteroids,Tetris,Arkanoid,Snake}Canvas.tsx   # renderers, exponen *CanvasHandle
 lib/
   supabase/{client,server}.ts          # createBrowserClient / createServerClient
-  data/{games,scores}.ts               # Supabase layer: getGames/getGame/getScores/insertScore
-  games/{asteroids,arkanoid,tetris,snake}/engine.ts   # DOM-agnostic engines
-    snake/sprites.ts                    # sprite atlas
+  data/{games,scores}.ts               # capa Supabase: getGames/getGame/getScores/insertScore
+  games/{asteroids,arkanoid,tetris,snake}/engine.ts   # motores agnósticos del DOM
+    snake/sprites.ts                    # atlas de sprites
 public/games/{arkanoid,snake}/         # spritesheets
-specs/                                 # spec-driven-design docs (01–09)
-references/                            # started-games (JS sources ported into lib/games),
-                                       #   source-assets, page templates
+specs/                                 # documentos de spec-driven-design (01–09)
+references/                            # started-games (fuentes JS portadas a lib/games),
+                                       #   source-assets, plantillas de páginas
 ```
 
-**Two data layers (key gotcha):**
+**Dos capas de datos (el detalle importante):**
 
-- `app/data/*` — the authoritative **static** catalog (`Game` interface, `GAMES` array, `CATS`) plus seed/fallback scores. The player and catalog import `GAMES` from `@/app/data`.
-- `lib/data/*` — the **Supabase-backed** layer. `getGames()`/`getGame()` read the `games` and `scores` tables, derive `best`/`plays` (`GameWithStats`), and fall back to the static `GAMES` if Supabase is unavailable. Pages (`home`, `hall-of-fame`, game detail) read from here.
+- `app/data/*` — el catálogo **estático** autoritativo (interfaz `Game`, arreglo `GAMES`, `CATS`) más los scores semilla/fallback. El player y el catálogo importan `GAMES` desde `@/app/data`.
+- `lib/data/*` — la capa respaldada por **Supabase**. `getGames()`/`getGame()` leen las tablas `games` y `scores`, derivan `best`/`plays` (`GameWithStats`), y caen de vuelta al `GAMES` estático si Supabase no está disponible. Las páginas (`home`, `hall-of-fame`, detalle de juego) leen de aquí.
 
-## Games — adding a new game
+## Juegos — cómo añadir uno nuevo
 
-A game touches six layers (recipe proven by Asteroids, Tetris, Arkanoid, Snake):
+Un juego toca seis capas (receta probada por Asteroids, Tetris, Arkanoid, Snake):
 
-1. **Catalog** — add an entry to `GAMES` in `app/data/games.ts` (`id, title, short, long, cat: ARCADE|PUZZLE|SHOOTER, cover, color`). This is the source of truth for which games exist.
-2. **Engine** — `lib/games/<id>/engine.ts`, DOM-agnostic: receives `ctx/width/height/callbacks`, exposes `update(dt)`/`draw()`/`reset()`/`forceGameOver()`. Port from `references/started-games/` (Asteroids/Tetris/Arkanoid) or design from scratch (Snake).
-3. **Canvas** — `components/games/<Game>Canvas.tsx` (`"use client"`, `forwardRef` exposing a `<Game>CanvasHandle`), owns the RAF render loop.
-4. **Player** — wire into `app/games/[id]/play/page.tsx` via an `is<Game> = id === "<id>"` flag; on game over it calls `insertScore` once (guarded by `savedOnceRef`). Games without a real engine keep the mock `.game-arena` branch.
-5. **Cover art** — a `.cover-<id>` gradient block in `app/globals.css`.
-6. **Persistence** — seed one row in the `games` table via MCP `apply_migration`; the generic `scores` table (`id, game_id, player_name, score, created_at`) needs no schema change and is accessed through `lib/data/scores.ts`. (Known debt from spec 06: tables have no RLS yet.)
+1. **Catálogo** — añade una entrada a `GAMES` en `app/data/games.ts` (`id, title, short, long, cat: ARCADE|PUZZLE|SHOOTER, cover, color`). Esta es la fuente de verdad de qué juegos existen.
+2. **Motor** — `lib/games/<id>/engine.ts`, agnóstico del DOM: recibe `ctx/width/height/callbacks`, expone `update(dt)`/`draw()`/`reset()`/`forceGameOver()`. Pórtalo desde `references/started-games/` (Asteroids/Tetris/Arkanoid) o diséñalo desde cero (Snake).
+3. **Canvas** — `components/games/<Game>Canvas.tsx` (`"use client"`, `forwardRef` que expone un `<Game>CanvasHandle`), controla el loop de render con RAF.
+4. **Jugador** — conéctalo en `app/games/[id]/play/page.tsx` vía un flag `is<Game> = id === "<id>"`; al terminar la partida llama a `insertScore` una sola vez (protegido con `savedOnceRef`). Los juegos sin motor real mantienen la rama mock de `.game-arena`.
+5. **Cover art** — un bloque gradiente `.cover-<id>` en `app/globals.css`.
+6. **Persistencia** — siembra una fila en la tabla `games` vía MCP `apply_migration`; la tabla genérica `scores` (`id, game_id, player_name, score, created_at`) no necesita cambio de esquema y se accede vía `lib/data/scores.ts`. (Deuda conocida del spec 06: las tablas todavía no tienen RLS.)
